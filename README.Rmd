@@ -1,0 +1,18 @@
+---
+title: "Advent of Code 2021"
+output: 
+    github_document: 
+        toc: true
+        toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(igraph)
+library(tidygraph)
+walk(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+Here's my work on Advent of Code 2021. 
+
