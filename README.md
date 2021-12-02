@@ -1,7 +1,7 @@
 Advent of Code 2021
 ================
 
--   [Day 1](#day-1)
+  - [Day 1](#day-1)
 
 Here’s my work on Advent of Code 2021.
 
