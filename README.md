@@ -4,6 +4,7 @@ Advent of Code 2021
   - [Day 1](#day-1)
   - [Day 2](#day-2)
   - [Day 3](#day-3)
+  - [Day 4](#day-4)
 
 Here’s my work on Advent of Code 2021.
 
@@ -155,3 +156,60 @@ d3_get_prod(d3_oxygen, d3_co2)
 ```
 
     ## [1] 3368358
+
+# Day 4
+
+## Part 1
+
+``` r
+d4_input <- readLines(here::here("data/day04.txt"))
+
+d4_order <- d4_input[[1]] %>% 
+  str_split(",") %>% 
+  pluck(1) %>% 
+  as.integer()
+
+d4_numbers <- d4_input[map(0:99, ~ 3:7 + (6 * .x)) %>% unlist() %>% sort()] %>%
+  str_trim() %>% 
+  str_split(" +") %>% 
+  unlist() %>% 
+  as.integer()
+
+d4_cards <- d4_numbers %>% 
+  array(dim = c(5, 5, 100))
+
+d4_position <- match(d4_numbers, d4_order) %>% 
+  array(dim = c(5, 5, 100))
+
+d4_rows <- d4_position %>% 
+  apply(MARGIN = c(1, 3), FUN = max) %>% 
+  apply(MARGIN = 2, FUN = min)
+d4_cols <- d4_position %>% 
+  apply(MARGIN = c(2, 3), FUN = max) %>% 
+  apply(MARGIN = 2, FUN = min)
+d4_win_times <- pmin(d4_rows, d4_cols)
+
+d4_scores <- (
+  (
+  d4_cards * (
+    d4_position > (
+      rep(d4_win_times, each = 25) %>% 
+        array(dim = c(5, 5, 100))
+    )
+  )
+) %>% 
+  apply(MARGIN = 3, sum)
+) * (d4_order[d4_win_times])
+
+d4_scores[which.min(d4_win_times)]
+```
+
+    ## [1] 2496
+
+## Part 2
+
+``` r
+d4_scores[which.max(d4_win_times)]
+```
+
+    ## [1] 25925
