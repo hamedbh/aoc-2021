@@ -315,11 +315,14 @@ d6_counts <- c(0, tabulate(d6_fish, 8))
 ```
 
 ``` r
-d6_pt1 <- d6_counts
-for (n in seq_len(80)) {
-  d6_pt1 <- c(d6_pt1[2:9], d6_pt1[1]) + c(rep(0, 6), d6_pt1[1], rep(0, 2))
+d6_sim_fish <- function(counts, N) {
+  res <- counts
+  for (n in seq_len(N)) {
+    res <- c(res[2:9], res[1]) + c(rep(0, 6), res[1], rep(0, 2))
+  }
+  res
 }
-d6_pt1 %>% 
+d6_sim_fish(d6_counts, N = 80) %>% 
   sum()
 ```
 
@@ -329,11 +332,7 @@ d6_pt1 %>%
 
 ``` r
 options(scipen = 999)
-d6_pt2 <- d6_counts
-for (n in seq_len(256)) {
-  d6_pt2 <- c(d6_pt2[2:9], d6_pt2[1]) + c(rep(0, 6), d6_pt2[1], rep(0, 2))
-}
-d6_pt2 %>% 
+d6_sim_fish(d6_counts, N = 256) %>% 
   sum()
 ```
 
