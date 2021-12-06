@@ -6,6 +6,7 @@ Advent of Code 2021
   - [Day 3](#day-3)
   - [Day 4](#day-4)
   - [Day 5](#day-5)
+  - [Day 6](#day-6)
 
 Here’s my work on Advent of Code 2021.
 
@@ -276,3 +277,64 @@ d5_input %>%
     ##   <lgl>           <int>
     ## 1 FALSE          152072
     ## 2 TRUE            16925
+
+# Day 6
+
+## Part 1
+
+Brute force worked fine for Part 1 but then died on Part 2. Left here
+for posterity.
+
+    d6_fish <- scan(here::here("data/day06.txt"), what = integer(), sep = ",")
+    
+    d6_increment_fish <- function(timer) {
+      if (timer == 0L) {
+        return(c(6L, 8L))
+      } else {
+        return(timer - 1L)
+      }
+    }
+    d6_sim_fish <- function(timers, N) {
+      res <- timers
+      for (n in seq_len(N)) {
+        res <- map(res, d6_increment_fish) %>% 
+          unlist()
+      }
+      res
+    }
+    d6_sim_fish(d6_fish, N = 80L) %>% 
+      length()
+
+Need to switch to keeping track of counts of fish.
+
+``` r
+d6_fish <- scan(here::here("data/day06.txt"), what = double(), sep = ",")
+# There are no zero values in the initial states, so need to add that to the
+# front
+d6_counts <- c(0, tabulate(d6_fish, 8))
+```
+
+``` r
+d6_pt1 <- d6_counts
+for (n in seq_len(80)) {
+  d6_pt1 <- c(d6_pt1[2:9], d6_pt1[1]) + c(rep(0, 6), d6_pt1[1], rep(0, 2))
+}
+d6_pt1 %>% 
+  sum()
+```
+
+    ## [1] 395627
+
+## Part 2
+
+``` r
+options(scipen = 999)
+d6_pt2 <- d6_counts
+for (n in seq_len(256)) {
+  d6_pt2 <- c(d6_pt2[2:9], d6_pt2[1]) + c(rep(0, 6), d6_pt2[1], rep(0, 2))
+}
+d6_pt2 %>% 
+  sum()
+```
+
+    ## [1] 1767323539209
