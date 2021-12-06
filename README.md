@@ -5,6 +5,7 @@ Advent of Code 2021
   - [Day 2](#day-2)
   - [Day 3](#day-3)
   - [Day 4](#day-4)
+  - [Day 5](#day-5)
 
 Here’s my work on Advent of Code 2021.
 
@@ -213,3 +214,65 @@ d4_scores[which.max(d4_win_times)]
 ```
 
     ## [1] 25925
+
+# Day 5
+
+## Part 1
+
+``` r
+d5_input <- tibble(
+  raw = readLines(here::here("data/day05.txt"))
+) %>% 
+  separate(
+    raw, 
+    into = c("x1", "y1", "x2", "y2"), 
+    convert = TRUE
+  ) %>% 
+  rowid_to_column() %>% 
+  mutate(
+    direction = case_when(
+      x1 == x2 ~ "vertical", 
+      y1 == y2 ~ "horizontal", 
+      TRUE     ~ "other"
+    )
+  ) %>% 
+  mutate(
+    all_pts = pmap(
+      ., 
+      ~ str_c(seq(..2, ..4), ",", seq(..3, ..5))
+    )
+  )
+```
+
+``` r
+d5_input %>% 
+  filter(direction != "other") %>% 
+  select(rowid, all_pts) %>% 
+  unnest(all_pts) %>% 
+  group_by(all_pts) %>% 
+  summarise(pt_count = n_distinct(rowid)) %>% 
+  count(pt_count > 1)
+```
+
+    ## # A tibble: 2 × 2
+    ##   `pt_count > 1`      n
+    ##   <lgl>           <int>
+    ## 1 FALSE          101541
+    ## 2 TRUE             5147
+
+## Part 2
+
+``` r
+d5_input %>% 
+  select(rowid, all_pts) %>% 
+  unnest(all_pts) %>% 
+  group_by(all_pts) %>% 
+  summarise(pt_count = n_distinct(rowid)) %>% 
+  count(pt_count > 1)
+```
+
+    ## # A tibble: 2 × 2
+    ##   `pt_count > 1`      n
+    ##   <lgl>           <int>
+    ## 1 FALSE          152072
+    ## 2 TRUE            16925
