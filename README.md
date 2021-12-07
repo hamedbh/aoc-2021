@@ -7,6 +7,27 @@ Advent of Code 2021
   - [Day 4](#day-4)
   - [Day 5](#day-5)
   - [Day 6](#day-6)
+  - [Day 7](#day-7)
+
+``` r
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+
+    ## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
+    ## ✔ tibble  3.1.6     ✔ dplyr   1.0.7
+    ## ✔ tidyr   1.1.4     ✔ stringr 1.4.0
+    ## ✔ readr   2.1.1     ✔ forcats 0.5.1
+
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
+walk(list.files(here::here("R"), full.names = TRUE), source)
+```
 
 Here’s my work on Advent of Code 2021.
 
@@ -337,3 +358,34 @@ d6_sim_fish(d6_counts, N = 256) %>%
 ```
 
     ## [1] 1767323539209
+
+# Day 7
+
+## Part 1
+
+``` r
+d7_input <- scan(here::here("data/day07.txt"), sep = ",")
+d7_all_poss_dist <- seq(min(d7_input), max(d7_input))
+d7_all_abs_dist <- map_dbl(
+  d7_all_poss_dist, 
+  ~ sum(abs(d7_input - .x))
+)
+d7_all_abs_dist[which.min(d7_all_abs_dist)]
+```
+
+    ## [1] 356992
+
+## Part 2
+
+``` r
+d7_increase_fuel_cost <- function(n) {
+  (n * (n + 1)) / 2
+}
+d7_fuel_cost <- map_dbl(
+  d7_all_poss_dist, 
+  ~ sum(d7_increase_fuel_cost(abs(d7_input - .x)))
+)
+d7_fuel_cost[which.min(d7_fuel_cost)]
+```
+
+    ## [1] 101268110
