@@ -6,7 +6,7 @@ output:
         toc_depth: 1
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 walk(list.files(here::here("R"), full.names = TRUE), source)
@@ -297,5 +297,32 @@ d6_sim_fish(d6_counts, N = 80) %>%
 options(scipen = 999)
 d6_sim_fish(d6_counts, N = 256) %>% 
   sum()
+```
+
+# Day 7 
+
+## Part 1
+
+```{r}
+d7_input <- scan(here::here("data/day07.txt"), sep = ",")
+d7_all_poss_dist <- seq(min(d7_input), max(d7_input))
+d7_all_abs_dist <- map_dbl(
+  d7_all_poss_dist, 
+  ~ sum(abs(d7_input - .x))
+)
+d7_all_abs_dist[which.min(d7_all_abs_dist)]
+```
+
+## Part 2
+
+```{r}
+d7_increase_fuel_cost <- function(n) {
+  (n * (n + 1)) / 2
+}
+d7_fuel_cost <- map_dbl(
+  d7_all_poss_dist, 
+  ~ sum(d7_increase_fuel_cost(abs(d7_input - .x)))
+)
+d7_fuel_cost[which.min(d7_fuel_cost)]
 ```
 
