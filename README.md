@@ -8,6 +8,7 @@ Advent of Code 2021
   - [Day 5](#day-5)
   - [Day 6](#day-6)
   - [Day 7](#day-7)
+  - [Day 8](#day-8)
 
 ``` r
 knitr::opts_chunk$set(echo = TRUE)
@@ -365,12 +366,7 @@ d6_sim_fish(d6_counts, N = 256) %>%
 
 ``` r
 d7_input <- scan(here::here("data/day07.txt"), sep = ",")
-d7_all_poss_dist <- seq(min(d7_input), max(d7_input))
-d7_all_abs_dist <- map_dbl(
-  d7_all_poss_dist, 
-  ~ sum(abs(d7_input - .x))
-)
-d7_all_abs_dist[which.min(d7_all_abs_dist)]
+sum(abs(d7_input - median(d7_input)))
 ```
 
     ## [1] 356992
@@ -381,6 +377,7 @@ d7_all_abs_dist[which.min(d7_all_abs_dist)]
 d7_increase_fuel_cost <- function(n) {
   (n * (n + 1)) / 2
 }
+d7_all_poss_dist <- seq(min(d7_input), max(d7_input))
 d7_fuel_cost <- map_dbl(
   d7_all_poss_dist, 
   ~ sum(d7_increase_fuel_cost(abs(d7_input - .x)))
@@ -389,3 +386,90 @@ d7_fuel_cost[which.min(d7_fuel_cost)]
 ```
 
     ## [1] 101268110
+
+# Day 8
+
+## Part 1
+
+``` r
+d8_input <- read_delim(
+  here::here("data/day08.txt"),
+  delim = " | ",
+  col_names = c("signals", "output"),
+  col_types = cols(.default = col_character())
+) %>%
+  mutate(across(.fns = str_trim))
+
+d8_input %>% 
+  mutate(
+    counts = map(
+      output, 
+      ~ str_split(.x, " ") %>% 
+        pluck(1) %>% 
+        map_int(nchar)
+    )
+  ) %>% 
+  mutate(
+    total = map_int(
+      counts, 
+      ~ sum(.x %in% c(2L, 4L, 3L, 7L))
+    )
+  ) %>% 
+  summarise(answer = sum(total))
+```
+
+    ## # A tibble: 1 × 1
+    ##   answer
+    ##    <int>
+    ## 1    294
+
+## Part 2
+
+Easier to wrap the required code in a function.
+
+``` r
+parse_display
+```
+
+    ## function (signals, output) 
+    ## {
+    ##     sig_len <- lengths(signals)
+    ##     check_setdiff <- function(signals, digit, len = 1) {
+    ##         map_int(signals, ~length(setdiff(signals[[digit]], .x))) == 
+    ##             1
+    ##     }
+    ##     d1 <- which(sig_len == 2)
+    ##     d4 <- which(sig_len == 4)
+    ##     d7 <- which(sig_len == 3)
+    ##     d8 <- which(sig_len == 7)
+    ##     d6 <- which(check_setdiff(signals, d1) & sig_len == 6)
+    ##     d0 <- which(check_setdiff(signals, d4) & sig_len == 6) %>% 
+    ##         setdiff(d6)
+    ##     d9 <- which(sig_len == 6) %>% setdiff(d6) %>% setdiff(d0)
+    ##     d5 <- which(check_setdiff(signals, d6) & sig_len == 5)
+    ##     d3 <- which(check_setdiff(signals, d9) & sig_len == 5) %>% 
+    ##         setdiff(d5)
+    ##     d2 <- which(sig_len == 5) %>% setdiff(d5) %>% setdiff(d3)
+    ##     output %>% match(signals[c(d0, d1, d2, d3, d4, d5, d6, d7, 
+    ##         d8, d9)] %>% map(sort)) %>% {
+    ##         . - 1
+    ##     } %>% str_c(collapse = "") %>% as.integer()
+    ## }
+
+``` r
+d8_input %>%
+  mutate(
+    across(
+      .fns = ~ str_split(.x, " ") %>%
+        map(str_split, "") %>%
+        map(map, sort)
+    )
+  ) %>%
+  mutate(parsed = map2_int(signals, output, parse_display)) %>%
+  summarise(answer = sum(parsed))
+```
+
+    ## # A tibble: 1 × 1
+    ##   answer
+    ##    <int>
+    ## 1 973292
