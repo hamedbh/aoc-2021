@@ -375,3 +375,22 @@ d8_input %>%
   summarise(answer = sum(parsed))
 ```
 
+# Day 9
+
+## Part 1
+
+```{r}
+d9_input <- readLines(here::here("data/day09.txt")) %>% 
+  str_split("") %>% 
+  map(as.integer) %>% 
+  reduce(rbind)
+```
+
+
+```{r}
+find_low_pts
+sum(d9_input[find_low_pts(d9_input)] + 1)
+```
+
+## Part 2
+
